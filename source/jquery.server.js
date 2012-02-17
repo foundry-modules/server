@@ -40,8 +40,17 @@ var methods = {
 
 				$.each(commands, function(i, command)
 				{
-					if ($.isFunction(parser[command.type]))
-						parser[command.type].apply(this, [command.data, textStatus, jqXHR]);
+					var nativeParser = parser[command.type],
+						customParser = o[command.type];
+
+					if ($.isFunction(nativeParser)) {
+
+						nativeParser.apply(this, [command.data, textStatus, jqXHR]);
+
+					} else if ($.isFunction(customParser)) {
+
+						customParser.apply(this, command.data);
+					}
 				});
 			};
 
