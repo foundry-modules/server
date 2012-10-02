@@ -11,9 +11,6 @@
  *
  */
 
-
-(function(){
-
 var self = $.server = function(options) {
 
 	var request = $.Deferred(),
@@ -130,6 +127,4 @@ self.parsers = {
 		this.rejectWith(this, arguments);
 	}
 }
-
-})();
 
