@@ -15,9 +15,9 @@ var self = $.server = function(options) {
 
 	var request = $.Deferred(),
 
-		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: $.noop()});
+		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}});
 
-	self.queue.addDeferred(function(){
+	self.queue.addDeferred(function(queue){
 
 		request.xhr = $.ajax(ajaxOptions)
 
@@ -55,14 +55,16 @@ var self = $.server = function(options) {
 			});
 
 		// Mark this queue as resolved
-		this.resolve();
+		setTimeout(queue.resolve, self.requestInterval);
 
 	});
 
 	return request;
-}
+};
 
-self.queue = $.Threads({threadLimit: 1, threadDelay: 1200});
+self.queue = $.Threads({threadLimit: 1});
+
+self.requestInterval = 1200;
 
 self.defaultOptions = {
 	type: 'POST',
@@ -126,5 +128,4 @@ self.parsers = {
 
 		this.rejectWith(this, arguments);
 	}
-}
-
+};
