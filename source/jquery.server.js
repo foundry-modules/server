@@ -81,8 +81,8 @@ self.parsers = {
 	script: function(data) {
 
 		// For hardcoded javascript codes
-		if (typeof data[0] == 'string') {
-			try { eval(data[0]) } catch(err) {};
+		if (typeof data == 'string') {
+			try { eval(data) } catch(err) {};
 			return;
 		}
 
