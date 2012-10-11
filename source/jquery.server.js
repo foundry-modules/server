@@ -13,13 +13,9 @@
 
 var self = $.server = function(options) {
 
-	var request = $.Deferred(),
+	var ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}}),
 
-		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}});
-
-	self.queue.addDeferred(function(queue){
-
-		request.xhr = $.ajax(ajaxOptions)
+		request = $.Ajax(ajaxOptions)
 
 			.done(function(commands){
 
@@ -35,7 +31,7 @@ var self = $.server = function(options) {
 
 					if ($.isFunction(parser)) {
 
-						parser.apply(request, command.data);
+						parser.call(request, command.data);
 					}
 				});
 
@@ -47,6 +43,7 @@ var self = $.server = function(options) {
 				}
 
 			})
+
 			.fail(function(xhr, status, response){
 
 				response = response || "Error retrieving data from server."
@@ -54,17 +51,8 @@ var self = $.server = function(options) {
 				request.rejectWith(request, response);
 			});
 
-		// Mark this queue as resolved
-		setTimeout(queue.resolve, self.requestInterval);
-
-	});
-
 	return request;
 };
-
-self.queue = $.Threads({threadLimit: 1});
-
-self.requestInterval = 1200;
 
 self.defaultOptions = {
 	type: 'POST',
