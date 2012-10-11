@@ -10,12 +10,13 @@
  * http://www.gnu.org/licenses/gpl.html
  *
  */
-
 var self = $.server = function(options) {
 
-	var ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}}),
+	var request = $.Deferred(),
 
-		request = $.Ajax(ajaxOptions)
+		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}});
+
+		request.xhr = $.Ajax(ajaxOptions)
 
 			.done(function(commands){
 
@@ -31,7 +32,7 @@ var self = $.server = function(options) {
 
 					if ($.isFunction(parser)) {
 
-						parser.call(request, command.data);
+						parser.apply(request, command.data);
 					}
 				});
 
@@ -66,11 +67,13 @@ self.defaultOptions = {
 
 self.parsers = {
 
-	script: function(data) {
+	script: function() {
+
+		var data = $.makeArray(arguments);
 
 		// For hardcoded javascript codes
-		if (typeof data == 'string') {
-			try { eval(data) } catch(err) {};
+		if (typeof data[0] == 'string') {
+			try { eval(data[0]) } catch(err) {};
 			return;
 		}
 
@@ -85,6 +88,14 @@ self.parsers = {
 
 		$.each(data, function(i, chainer)
 		{
+			if (chainer.property==="Foundry") {
+				chainer.property = $.globalNamespace;
+			}
+
+			if (chainer.method==="Foundry") {
+				chainer.method = $.globalNamespace;
+			}
+
 			try {
 				switch(chainer.type)
 				{
@@ -112,7 +123,7 @@ self.parsers = {
 		this.resolveWith(this, arguments);
 	},
 
-	reject: function() {
+	reject: function(args) {
 
 		this.rejectWith(this, arguments);
 	}
