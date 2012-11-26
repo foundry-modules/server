@@ -22,7 +22,7 @@ var self = $.server = function(options) {
 
 				if (typeof commands==="string") {
 					try {
-						commands = eval(commands);
+						commands = $.parseJSON(commands);
 					} catch(e) {}
 				}
 
