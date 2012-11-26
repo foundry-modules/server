@@ -20,6 +20,12 @@ var self = $.server = function(options) {
 
 			.done(function(commands){
 
+				if (typeof commands==="string") {
+					try {
+						commands = eval(commands);
+					} catch(e) {}
+				}
+
 				if (!$.isArray(commands)) {
 
 					request.rejectWith(request, ["Invalid server response."]);
