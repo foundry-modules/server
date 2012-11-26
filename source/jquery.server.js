@@ -22,7 +22,7 @@ var self = $.server = function(options) {
 
 				if (!$.isArray(commands)) {
 
-					request.rejectWith(request, "Invalid server response.");
+					request.rejectWith(request, ["Invalid server response."]);
 				}
 
 				$.each(commands, function(i, command)
@@ -47,7 +47,7 @@ var self = $.server = function(options) {
 
 			.fail(function(xhr, status, response){
 
-				response = response || "Error retrieving data from server."
+				response = response || ["Error retrieving data from server."];
 
 				request.rejectWith(request, response);
 			});
