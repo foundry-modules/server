@@ -29,18 +29,20 @@ var self = $.server = function(options) {
 				if (!$.isArray(commands)) {
 
 					request.rejectWith(request, ["Invalid server response."]);
+
+				} else {
+
+					$.each(commands, function(i, command)
+					{
+						var type = command.type,
+							parser = self.parsers[type] || options[type];
+
+						if ($.isFunction(parser)) {
+
+							parser.apply(request, command.data);
+						}
+					});
 				}
-
-				$.each(commands, function(i, command)
-				{
-					var type = command.type,
-						parser = self.parsers[type] || options[type];
-
-					if ($.isFunction(parser)) {
-
-						parser.apply(request, command.data);
-					}
-				});
 
 				// If server did not resolve this request
 				if (request.state()==="pending") {
