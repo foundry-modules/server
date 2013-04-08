@@ -131,8 +131,13 @@ self.parsers = {
 		this.resolveWith(this, arguments);
 	},
 
-	reject: function(args) {
+	reject: function() {
 
 		this.rejectWith(this, arguments);
+	},
+
+	notify: function() {
+
+		this.notifyWith(this, arguments);
 	}
 };
