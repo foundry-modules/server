@@ -32,15 +32,26 @@ var self = $.server = function(options) {
 
 				} else {
 
-					$.each(commands, function(i, command)
-					{
+					var parse = function(command){
 						var type = command.type,
 							parser = self.parsers[type] || options[type];
 
 						if ($.isFunction(parser)) {
-
-							parser.apply(request, command.data);
+							return parser.apply(request, command.data);
 						}
+					}
+
+					// Execute all the notifications first
+					var commands = $.map(commands, function(command) {
+						if (command.type=="notify") {
+							parse(command);
+						} else {
+							return command;
+						}
+					})
+
+					$.each(commands, function(i, command) {
+						parse(command);
 					});
 				}
 
@@ -123,7 +134,7 @@ self.parsers = {
 			} catch(err) {
 				chainBroken = true;
 			}
-		});
+		})
 	},
 
 	resolve: function() {
