@@ -150,5 +150,10 @@ self.parsers = {
 	notify: function() {
 
 		this.notifyWith(this, arguments);
+	},
+
+	redirect: function(url) {
+
+		window.location = url;
 	}
 };
