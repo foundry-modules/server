@@ -1,4 +1,4 @@
-all: wrap-core minify
+all: wrap-script minify-script
 
 include ../../build/modules.mk
 
