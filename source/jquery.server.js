@@ -23,12 +23,14 @@ var self = $.server = function(options) {
 				if (typeof commands==="string") {
 					try {
 						commands = $.parseJSON(commands);
-					} catch(e) {}
+					} catch(e) {
+						request.rejectWith(request, ["Unable to parse Ajax commands.", "error"])
+					}
 				}
-
+				
 				if (!$.isArray(commands)) {
 
-					request.rejectWith(request, ["Invalid server response."]);
+					request.rejectWith(request, ["Invalid ajax commands.", "error"]);
 
 				} else {
 
@@ -64,11 +66,9 @@ var self = $.server = function(options) {
 
 			})
 
-			.fail(function(xhr, status, response){
+			.fail(function(xhr, status, statusText){
 
-				response = response || ["Error retrieving data from server."];
-
-				request.rejectWith(request, response);
+				request.rejectWith(request, [statusText, status]);
 			});
 
 	return request;
