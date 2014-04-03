@@ -27,7 +27,7 @@ var self = $.server = function(options) {
 						request.rejectWith(request, ["Unable to parse Ajax commands.", "error"])
 					}
 				}
-				
+
 				if (!$.isArray(commands)) {
 
 					request.rejectWith(request, ["Invalid ajax commands.", "error"]);
@@ -81,6 +81,7 @@ self.defaultOptions = {
 		format: 'ajax',
 		no_html: 1
 	},
+	cache: false,
 	dataType: 'json'
 };
 
