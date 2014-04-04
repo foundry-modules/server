@@ -82,6 +82,7 @@ self.defaultOptions = {
 		no_html: 1
 	},
 	cache: false,
+	contentType: 'application/x-www-form-urlencoded',
 	dataType: 'json'
 };
 
