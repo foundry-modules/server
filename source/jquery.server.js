@@ -14,62 +14,63 @@ var self = $.server = function(options) {
 
 	var request = $.Deferred(),
 
-		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}});
+		ajaxOptions = $.extend(true, {}, self.defaultOptions, options, {success: function(){}}),
 
-		request.xhr = $.Ajax(ajaxOptions)
+		xhr = request.xhr =
+			$.Ajax(ajaxOptions)
+				.done(function(commands){
 
-			.done(function(commands){
-
-				if (typeof commands==="string") {
-					try {
-						commands = $.parseJSON(commands);
-					} catch(e) {
-						request.rejectWith(request, ["Unable to parse Ajax commands.", "error"])
-					}
-				}
-
-				if (!$.isArray(commands)) {
-
-					request.rejectWith(request, ["Invalid ajax commands.", "error"]);
-
-				} else {
-
-					var parse = function(command){
-						var type = command.type,
-							parser = self.parsers[type] || options[type];
-
-						if ($.isFunction(parser)) {
-							return parser.apply(request, command.data);
+					if (typeof commands==="string") {
+						try {
+							commands = $.parseJSON(commands);
+						} catch(e) {
+							request.rejectWith(request, ["Unable to parse Ajax commands.", "error"])
 						}
 					}
 
-					// Execute all the notifications first
-					var commands = $.map(commands, function(command) {
-						if (command.type=="notify") {
+					if (!$.isArray(commands)) {
+
+						request.rejectWith(request, ["Invalid ajax commands.", "error"]);
+
+					} else {
+
+						var parse = function(command){
+							var type = command.type,
+								parser = self.parsers[type] || options[type];
+
+							if ($.isFunction(parser)) {
+								return parser.apply(request, command.data);
+							}
+						}
+
+						// Execute all the notifications first
+						var commands = $.map(commands, function(command) {
+							if (command.type=="notify") {
+								parse(command);
+							} else {
+								return command;
+							}
+						})
+
+						$.each(commands, function(i, command) {
 							parse(command);
-						} else {
-							return command;
-						}
-					})
+						});
+					}
 
-					$.each(commands, function(i, command) {
-						parse(command);
-					});
-				}
+					// If server did not resolve this request
+					if (request.state()==="pending") {
 
-				// If server did not resolve this request
-				if (request.state()==="pending") {
+						// We'll resolve it ourselves
+						request.resolveWith(request);
+					}
+				})
+				.fail(function(jqXHR, status, statusText){
 
-					// We'll resolve it ourselves
-					request.resolveWith(request);
-				}
+					request.rejectWith(request, [statusText, status]);
+				});
 
-			})
-
-			.fail(function(xhr, status, statusText){
-
-				request.rejectWith(request, [statusText, status]);
-			});
+		// Add abort method
+		request.abort = xhr.abort;
 
 	return request;
 };
